@@ -231,7 +231,7 @@ export default function SalsaApp() {
       <header style={{position:'relative',overflow:'hidden',padding:'48px 24px 24px',textAlign:'center',background:'linear-gradient(135deg,#0a0a0a,#1a0a1a 30%,#1a0f0a 70%,#0a0a0a)',backgroundSize:'300% 300%',animation:'gradBG 12s ease infinite'}}>
         <div style={{position:'absolute',top:'-40%',left:'50%',transform:'translateX(-50%)',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle,rgba(225,29,72,.1),rgba(249,115,22,.05) 50%,transparent 70%)',pointerEvents:'none'}} />
         {/* Related site icons - top right */}
-        <div style={{position:'absolute',top:16,right:16,display:'flex',gap:10,zIndex:2}}>
+        <div style={{position:'absolute',top:16,left:16,display:'flex',gap:10,zIndex:2}}>
           {[
             { href:'https://media-noche-karmiel.vercel.app', img:'/media-noche-logo.png', title:'Media Noche Salsa' },
             { href:'https://avnerman.vercel.app/', img:'/embarking.png', title:'Avner Man' },
