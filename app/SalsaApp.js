@@ -314,6 +314,33 @@ export default function SalsaApp() {
         )}
       </main>
 
+      {/* Related Sites */}
+      <section style={{maxWidth:1200,margin:'0 auto',padding:'0 20px 40px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:20}}>
+          <div style={{flex:1,height:1,backgroundColor:'#1f2937'}} />
+          <span style={{fontSize:14,color:'#6b7280',whiteSpace:'nowrap'}}>פרויקטים נוספים</span>
+          <div style={{flex:1,height:1,backgroundColor:'#1f2937'}} />
+        </div>
+        <div style={{display:'flex',gap:16,justifyContent:'center',flexWrap:'wrap'}}>
+          {[
+            { href:'https://media-noche-karmiel.vercel.app', img:'/media-noche-logo.png', title:'Media Noche Salsa', sub:'כרמיאל' },
+            { href:'https://avnerman.vercel.app/', img:'/embarking.png', title:'Avner Man', sub:'EMBARKING' },
+          ].map(({href,img,title,sub}) => (
+            <a key={href} href={href} target="_blank" rel="noopener noreferrer"
+              style={{display:'block',borderRadius:16,overflow:'hidden',border:'1px solid #1f2937',width:180,textDecoration:'none',background:'#111827',transition:'all .25s',flexShrink:0}}
+              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-4px)';e.currentTarget.style.borderColor='#374151';e.currentTarget.style.boxShadow='0 12px 32px rgba(0,0,0,.5)'}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='#1f2937';e.currentTarget.style.boxShadow='none'}}
+            >
+              <img src={img} alt={title} style={{width:'100%',height:140,objectFit:'cover',display:'block'}} />
+              <div style={{padding:'10px 12px'}}>
+                <p style={{color:'#f3f4f6',fontWeight:600,fontSize:14,margin:0}}>{title}</p>
+                <p style={{color:'#6b7280',fontSize:12,margin:'2px 0 0'}}>{sub}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
       {/* Footer */}
       <footer style={{textAlign:'center',padding:'28px 24px',borderTop:'1px solid #1f2937',color:'#9ca3af',fontSize:14}}>
         <img src="/icon.png" alt="" style={{width:40,height:40,borderRadius:10,marginBottom:8}} />
