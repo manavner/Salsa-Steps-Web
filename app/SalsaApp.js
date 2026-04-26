@@ -230,6 +230,21 @@ export default function SalsaApp() {
       {/* Hero */}
       <header style={{position:'relative',overflow:'hidden',padding:'48px 24px 24px',textAlign:'center',background:'linear-gradient(135deg,#0a0a0a,#1a0a1a 30%,#1a0f0a 70%,#0a0a0a)',backgroundSize:'300% 300%',animation:'gradBG 12s ease infinite'}}>
         <div style={{position:'absolute',top:'-40%',left:'50%',transform:'translateX(-50%)',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle,rgba(225,29,72,.1),rgba(249,115,22,.05) 50%,transparent 70%)',pointerEvents:'none'}} />
+        {/* Related site icons - top right */}
+        <div style={{position:'absolute',top:16,right:16,display:'flex',gap:10,zIndex:2}}>
+          {[
+            { href:'https://media-noche-karmiel.vercel.app', img:'/media-noche-logo.png', title:'Media Noche Salsa' },
+            { href:'https://avnerman.vercel.app/', img:'/embarking.png', title:'Avner Man' },
+          ].map(({href,img,title}) => (
+            <a key={href} href={href} target="_blank" rel="noopener noreferrer" title={title}
+              style={{display:'block',width:56,height:56,borderRadius:12,overflow:'hidden',border:'2px solid #374151',boxShadow:'0 4px 16px rgba(0,0,0,.4)',transition:'all .2s',flexShrink:0}}
+              onMouseEnter={e=>{e.currentTarget.style.transform='scale(1.1)';e.currentTarget.style.borderColor='#6b7280';e.currentTarget.style.boxShadow='0 8px 24px rgba(0,0,0,.6)'}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='#374151';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,.4)'}}
+            >
+              <img src={img} alt={title} style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}} />
+            </a>
+          ))}
+        </div>
         <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,position:'relative',zIndex:1,marginBottom:12}}>
           <img src="/icon.png" alt="Salsa Steps Catalog" style={{width:72,height:72,borderRadius:16,boxShadow:'0 8px 32px rgba(225,29,72,.3)'}} />
           <div>
@@ -313,33 +328,6 @@ export default function SalsaApp() {
           </div>
         )}
       </main>
-
-      {/* Related Sites */}
-      <section style={{maxWidth:1200,margin:'0 auto',padding:'0 20px 40px'}}>
-        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:20}}>
-          <div style={{flex:1,height:1,backgroundColor:'#1f2937'}} />
-          <span style={{fontSize:14,color:'#6b7280',whiteSpace:'nowrap'}}>פרויקטים נוספים</span>
-          <div style={{flex:1,height:1,backgroundColor:'#1f2937'}} />
-        </div>
-        <div style={{display:'flex',gap:16,justifyContent:'center',flexWrap:'wrap'}}>
-          {[
-            { href:'https://media-noche-karmiel.vercel.app', img:'/media-noche-logo.png', title:'Media Noche Salsa', sub:'כרמיאל' },
-            { href:'https://avnerman.vercel.app/', img:'/embarking.png', title:'Avner Man', sub:'EMBARKING' },
-          ].map(({href,img,title,sub}) => (
-            <a key={href} href={href} target="_blank" rel="noopener noreferrer"
-              style={{display:'block',borderRadius:16,overflow:'hidden',border:'1px solid #1f2937',width:180,textDecoration:'none',background:'#111827',transition:'all .25s',flexShrink:0}}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-4px)';e.currentTarget.style.borderColor='#374151';e.currentTarget.style.boxShadow='0 12px 32px rgba(0,0,0,.5)'}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='#1f2937';e.currentTarget.style.boxShadow='none'}}
-            >
-              <img src={img} alt={title} style={{width:'100%',height:140,objectFit:'cover',display:'block'}} />
-              <div style={{padding:'10px 12px'}}>
-                <p style={{color:'#f3f4f6',fontWeight:600,fontSize:14,margin:0}}>{title}</p>
-                <p style={{color:'#6b7280',fontSize:12,margin:'2px 0 0'}}>{sub}</p>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
 
       {/* Footer */}
       <footer style={{textAlign:'center',padding:'28px 24px',borderTop:'1px solid #1f2937',color:'#9ca3af',fontSize:14}}>
