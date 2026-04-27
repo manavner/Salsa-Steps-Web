@@ -228,18 +228,18 @@ export default function SalsaApp() {
       <style>{CSS}</style>
 
       {/* Hero */}
-      <header style={{position:'relative',overflow:'hidden',padding:'48px 24px 24px',textAlign:'center',background:'linear-gradient(135deg,#0a0a0a,#1a0a1a 30%,#1a0f0a 70%,#0a0a0a)',backgroundSize:'300% 300%',animation:'gradBG 12s ease infinite'}}>
+      <header style={{position:'relative',overflow:'hidden',padding:'20px 24px 24px',textAlign:'center',background:'linear-gradient(135deg,#0a0a0a,#1a0a1a 30%,#1a0f0a 70%,#0a0a0a)',backgroundSize:'300% 300%',animation:'gradBG 12s ease infinite'}}>
         <div style={{position:'absolute',top:'-40%',left:'50%',transform:'translateX(-50%)',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle,rgba(225,29,72,.1),rgba(249,115,22,.05) 50%,transparent 70%)',pointerEvents:'none'}} />
-        {/* Related site icons - top right */}
-        <div style={{position:'absolute',top:16,left:16,display:'flex',gap:10,zIndex:2}}>
+        {/* Related site icons - top row */}
+        <div style={{display:'flex',gap:10,marginBottom:16,position:'relative',zIndex:2}}>
           {[
             { href:'https://media-noche-karmiel.vercel.app', img:'/media-noche-logo.png', title:'Media Noche Salsa' },
             { href:'https://avnerman.vercel.app/', img:'/embarking.png', title:'Avner Man' },
           ].map(({href,img,title}) => (
             <a key={href} href={href} target="_blank" rel="noopener noreferrer" title={title}
               style={{display:'block',width:56,height:56,borderRadius:12,overflow:'hidden',border:'2px solid #374151',boxShadow:'0 4px 16px rgba(0,0,0,.4)',transition:'all .2s',flexShrink:0}}
-              onMouseEnter={e=>{e.currentTarget.style.transform='scale(1.1)';e.currentTarget.style.borderColor='#6b7280';e.currentTarget.style.boxShadow='0 8px 24px rgba(0,0,0,.6)'}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='#374151';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,.4)'}}
+              onMouseEnter={e=>{e.currentTarget.style.transform='scale(1.1)';e.currentTarget.style.borderColor='#6b7280';}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='#374151';}}
             >
               <img src={img} alt={title} style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}} />
             </a>
