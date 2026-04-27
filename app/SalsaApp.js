@@ -334,6 +334,14 @@ export default function SalsaApp() {
         <img src="/icon.png" alt="" style={{width:40,height:40,borderRadius:10,marginBottom:8}} />
         <p style={{fontWeight:600}}>Salsa Steps Catalog © {new Date().getFullYear()} Avner Man</p>
         <p style={{fontSize:13,color:'#6b7280',marginTop:4}}>נתונים מ-Google Sheets | {steps.length} צעדים | נבנה עם ❤️</p>
+        <a href="https://vercel.com/manavner-9849s-projects/salsa-steps-web/analytics" target="_blank" rel="noopener noreferrer"
+          style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:14,padding:'7px 16px',borderRadius:20,border:'1px solid #374151',color:'#9ca3af',fontSize:12,textDecoration:'none',background:'#111827',transition:'all .2s'}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor='#6b7280';e.currentTarget.style.color='#f3f4f6';}}
+          onMouseLeave={e=>{e.currentTarget.style.borderColor='#374151';e.currentTarget.style.color='#9ca3af';}}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+          Vercel Analytics
+        </a>
       </footer>
 
       {showTop && <button onClick={()=>window.scrollTo({top:0,behavior:'smooth'})} style={{position:'fixed',bottom:20,left:20,width:44,height:44,borderRadius:'50%',background:'linear-gradient(135deg,#e11d48,#f97316)',color:'#fff',border:'none',cursor:'pointer',fontSize:20,fontWeight:700,boxShadow:'0 4px 20px rgba(225,29,72,.4)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center'}}>↑</button>}

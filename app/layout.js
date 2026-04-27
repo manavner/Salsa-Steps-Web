@@ -1,3 +1,5 @@
+import { Analytics } from '@vercel/analytics/react';
+
 export const metadata = {
   title: 'Salsa Steps Catalog - by Avner Man',
   description: 'חפש, סנן והפעל סרטוני הדגמה לצעדי סלסה ורואדה',
@@ -19,6 +21,7 @@ export default function RootLayout({ children }) {
       </head>
       <body style={{ margin: 0, padding: 0, background: '#0a0a0a', fontFamily: "'Heebo', sans-serif" }}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
