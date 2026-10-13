@@ -36,6 +36,21 @@ function ytId(url) {
 }
 function ytThumb(url) { const id = ytId(url); return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : null; }
 
+// ─── Google Drive helpers ───
+function driveId(url) {
+  if (!url) return null;
+  const m = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^#]*&)?id=)([a-zA-Z0-9_-]{20,})/);
+  return m ? m[1] : null;
+}
+function videoThumb(url) {
+  const yt = ytThumb(url); if (yt) return yt;
+  const d = driveId(url); return d ? `https://lh3.googleusercontent.com/d/${d}=w480` : null;
+}
+function embedUrl(url) {
+  const yt = ytId(url); if (yt) return `https://www.youtube.com/embed/${yt}?autoplay=1&rel=0`;
+  const d = driveId(url); return d ? `https://drive.google.com/file/d/${d}/preview` : null;
+}
+
 // ─── Config ───
 const LEVEL_ORDER = ['Beginners','Intermediate','Advanced'];
 const LC = {
@@ -52,7 +67,8 @@ const TC = {
 
 // ─── VideoModal ───
 function VideoModal({ step, onClose }) {
-  const id = ytId(step.link);
+  const src = embedUrl(step.link);
+  const isDrive = !ytId(step.link) && !!driveId(step.link);
   useEffect(() => {
     const h = e => e.key === 'Escape' && onClose();
     document.body.style.overflow = 'hidden';
@@ -70,9 +86,9 @@ function VideoModal({ step, onClose }) {
           <span style={{padding:'4px 11px',borderRadius:10,fontSize:12,color:'#fff',fontWeight:600,backgroundColor:TC[step.type]?.color||'#6b7280'}}>{TC[step.type]?.label||step.type}</span>
           {step.originalCount && <span style={{padding:'4px 11px',borderRadius:10,fontSize:12,color:'#fff',fontWeight:600,backgroundColor:'#374151'}}>ספירה: {step.originalCount}</span>}
         </div>
-        {id ? (
+        {src ? (
           <div style={{position:'relative',width:'100%',paddingTop:'56.25%',borderRadius:12,overflow:'hidden',background:'#000'}}>
-            <iframe src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`} title={step.stepName} style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',border:'none'}} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+            <iframe src={src} title={step.stepName} style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',border:'none'}} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
           </div>
         ) : step.link ? (
           <div style={{padding:40,textAlign:'center',background:'#1f2937',borderRadius:12}}>
@@ -82,7 +98,7 @@ function VideoModal({ step, onClose }) {
         ) : (
           <div style={{padding:40,textAlign:'center',background:'#1f2937',borderRadius:12}}><p style={{color:'#9ca3af'}}>אין סרטון זמין לצעד זה</p></div>
         )}
-        {step.link && id && <a href={step.link} target="_blank" rel="noopener noreferrer" style={{display:'block',textAlign:'center',marginTop:12,color:'#9ca3af',fontSize:13,textDecoration:'none'}}>צפה ב-YouTube ↗</a>}
+        {step.link && src && <a href={step.link} target="_blank" rel="noopener noreferrer" style={{display:'block',textAlign:'center',marginTop:12,color:'#9ca3af',fontSize:13,textDecoration:'none'}}>{isDrive ? 'צפה ב-Google Drive ↗' : 'צפה ב-YouTube ↗'}</a>}
       </div>
     </div>
   );
@@ -92,7 +108,7 @@ function VideoModal({ step, onClose }) {
 function StepCard({ step, onPlay, idx }) {
   const [imgOk, setImgOk] = useState(false);
   const [hov, setHov] = useState(false);
-  const thumb = ytThumb(step.link);
+  const thumb = videoThumb(step.link);
   const lc = LC[step.level]||{color:'#6b7280',icon:'•',label:step.level};
   const tc = TC[step.type]||{color:'#6b7280',label:step.type};
 
@@ -126,7 +142,7 @@ function StepCard({ step, onPlay, idx }) {
         {thumb ? (
           <>
             {!imgOk && <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:36,background:'linear-gradient(135deg,#1f2937,#111827)'}}>🎬</div>}
-            <img src={thumb} alt={step.stepName} style={{width:'100%',height:'100%',objectFit:'cover',transition:'opacity .3s',opacity:imgOk?1:0}} onLoad={()=>setImgOk(true)} />
+            <img src={thumb} alt={step.stepName} referrerPolicy="no-referrer" style={{width:'100%',height:'100%',objectFit:'cover',transition:'opacity .3s',opacity:imgOk?1:0}} onLoad={()=>setImgOk(true)} />
             <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,.35)',transition:'opacity .25s',opacity:hov?1:0.5}}>
               <div style={{width:44,height:44,borderRadius:'50%',background:'rgba(225,29,72,.9)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,color:'#fff',paddingLeft:3,boxShadow:'0 4px 16px rgba(225,29,72,.4)'}}>▶</div>
             </div>
