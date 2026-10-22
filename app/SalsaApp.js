@@ -116,12 +116,17 @@ function VideoModal({ step, onClose }) {
           {step.originalCount && <span style={{padding:'4px 11px',borderRadius:10,fontSize:12,color:'#fff',fontWeight:600,backgroundColor:'#374151'}}>ספירה: {step.originalCount}</span>}
         </div>
         {links.length > 1 && (
-          <div style={{display:'flex',gap:8,marginBottom:12,flexWrap:'wrap'}}>
-            {links.map((l,i) => {
-              const a = i===cur;
-              return <button key={l} onClick={()=>setCur(i)} style={{padding:'6px 14px',fontSize:13,fontFamily:"'Heebo',sans-serif",borderRadius:10,cursor:'pointer',border:'1px solid',fontWeight:a?700:400,
-                backgroundColor:a?'#e11d48':'transparent',color:a?'#fff':'#d1d5db',borderColor:a?'#e11d48':'#374151',transition:'all .2s'}}>🎬 סרטון {i+1}</button>;
-            })}
+          <div style={{marginBottom:12}}>
+            <p style={{fontSize:13,color:'#9ca3af',marginBottom:8}}>🎬 {links.length} סרטונים לצעד זה, בחר סרטון:</p>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(110px,1fr))',gap:8}}>
+              {links.map((l,i) => {
+                const a = i===cur; const th = videoThumb(l);
+                return <button key={l} onClick={()=>setCur(i)} style={{padding:0,borderRadius:10,cursor:'pointer',overflow:'hidden',border:'2px solid',borderColor:a?'#e11d48':'#374151',background:'#0f172a',fontFamily:"'Heebo',sans-serif",transition:'all .2s'}}>
+                  <div style={{aspectRatio:'16/9',background:th?`center/cover no-repeat url(${th})`:'#1f2937',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>{!th && '🎬'}</div>
+                  <div style={{padding:'4px 0',fontSize:12,fontWeight:a?700:400,color:a?'#fff':'#d1d5db',background:a?'#e11d48':'transparent'}}>סרטון {i+1}</div>
+                </button>;
+              })}
+            </div>
           </div>
         )}
         {src ? (
