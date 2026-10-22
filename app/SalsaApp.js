@@ -53,6 +53,11 @@ function mergeSteps(rows) {
   });
   return [...map.values()].map(s => ({ ...s, link: s.links[0] || '' }));
 }
+// One card per video, so a step with two videos shows two cards side by side
+function toCards(steps) {
+  return steps.flatMap(s => s.links.length <= 1 ? [{ ...s, videoNo:1, videoTotal:s.links.length }]
+    : s.links.map((l,i) => ({ ...s, link:l, links:[l], videoNo:i+1, videoTotal:s.links.length })));
+}
 
 // ─── YouTube helpers ───
 function ytId(url) {
@@ -93,9 +98,7 @@ const TC = {
 
 // ─── VideoModal ───
 function VideoModal({ step, onClose }) {
-  const [cur, setCur] = useState(0);
-  const links = step.links || [];
-  const link = links[cur] || '';
+  const link = step.link || '';
   const src = embedUrl(link);
   const isDrive = !ytId(link) && !!driveId(link);
   useEffect(() => {
@@ -109,21 +112,12 @@ function VideoModal({ step, onClose }) {
     <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.88)',backdropFilter:'blur(8px)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:16}}>
       <div onClick={e=>e.stopPropagation()} style={{background:'#111827',borderRadius:20,width:'100%',maxWidth:780,padding:24,position:'relative',border:'1px solid #1f2937',direction:'rtl',maxHeight:'90vh',overflowY:'auto'}}>
         <button onClick={onClose} style={{position:'absolute',top:14,left:14,background:'#374151',border:'none',color:'#fff',width:34,height:34,borderRadius:'50%',cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center',zIndex:10}}>✕</button>
-        <h2 style={{fontSize:22,fontWeight:700,color:'#f3f4f6',marginBottom:10,paddingLeft:44}}>{step.stepName}</h2>
+        <h2 style={{fontSize:22,fontWeight:700,color:'#f3f4f6',marginBottom:10,paddingLeft:44}}>{step.stepName}{step.videoTotal > 1 && <span style={{fontSize:15,fontWeight:400,color:'#9ca3af'}}> · סרטון {step.videoNo} מתוך {step.videoTotal}</span>}</h2>
         <div style={{display:'flex',gap:7,marginBottom:16,flexWrap:'wrap'}}>
           <span style={{padding:'4px 11px',borderRadius:10,fontSize:12,color:'#fff',fontWeight:600,backgroundColor:LC[step.level]?.color||'#6b7280'}}>{LC[step.level]?.icon} {LC[step.level]?.label||step.level}</span>
           <span style={{padding:'4px 11px',borderRadius:10,fontSize:12,color:'#fff',fontWeight:600,backgroundColor:TC[step.type]?.color||'#6b7280'}}>{TC[step.type]?.label||step.type}</span>
           {step.originalCount && <span style={{padding:'4px 11px',borderRadius:10,fontSize:12,color:'#fff',fontWeight:600,backgroundColor:'#374151'}}>ספירה: {step.originalCount}</span>}
         </div>
-        {links.length > 1 && (
-          <div style={{display:'flex',gap:8,marginBottom:12,flexWrap:'wrap'}}>
-            {links.map((l,i) => {
-              const a = i===cur;
-              return <button key={l} onClick={()=>setCur(i)} style={{padding:'6px 14px',fontSize:13,fontFamily:"'Heebo',sans-serif",borderRadius:10,cursor:'pointer',border:'1px solid',fontWeight:a?700:400,
-                backgroundColor:a?'#e11d48':'transparent',color:a?'#fff':'#d1d5db',borderColor:a?'#e11d48':'#374151',transition:'all .2s'}}>🎬 סרטון {i+1}</button>;
-            })}
-          </div>
-        )}
         {src ? (
           <div style={{position:'relative',width:'100%',paddingTop:'56.25%',borderRadius:12,overflow:'hidden',background:'#000'}}>
             <iframe key={src} src={src} title={step.stepName} style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',border:'none'}} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
@@ -199,7 +193,7 @@ function StepCard({ step, onPlay, idx }) {
         <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
           <span style={{padding:'2px 9px',fontSize:11,borderRadius:10,fontWeight:500,border:'1px solid',backgroundColor:`${tc.color}18`,color:tc.color,borderColor:`${tc.color}44`}}>{tc.label}</span>
           {step.originalCount && <span style={{padding:'2px 9px',fontSize:11,borderRadius:10,fontWeight:400,backgroundColor:'#1f293722',color:'#9ca3af',border:'1px solid #37415133'}}>{step.originalCount} counts</span>}
-          {step.links?.length > 1 && <span style={{padding:'2px 9px',fontSize:11,borderRadius:10,fontWeight:600,border:'1px solid',backgroundColor:'#e11d4818',color:'#fb7185',borderColor:'#e11d4844'}}>🎬 {step.links.length} סרטונים</span>}
+          {step.videoTotal > 1 && <span style={{padding:'2px 9px',fontSize:11,borderRadius:10,fontWeight:600,border:'1px solid',backgroundColor:'#e11d4818',color:'#fb7185',borderColor:'#e11d4844'}}>🎬 סרטון {step.videoNo} מתוך {step.videoTotal}</span>}
           {!step.link && <span style={{padding:'2px 9px',fontSize:11,borderRadius:10,fontWeight:500,border:'1px solid',backgroundColor:'#7f1d1d33',color:'#fca5a5',borderColor:'#7f1d1d55'}}>אין וידאו</span>}
         </div>
       </div>
@@ -244,9 +238,9 @@ export default function SalsaApp() {
       if (csv.length < 50) throw new Error('Short');
       const p = parseCSV(csv);
       if (p.length === 0) throw new Error('Empty');
-      setSteps(mergeSteps([...p, ...EXTRA_VIDEOS])); setSrc('live');
+      setSteps(toCards(mergeSteps([...p, ...EXTRA_VIDEOS]))); setSrc('live');
     } catch {
-      setSteps(mergeSteps([...EMBEDDED_DATA, ...EXTRA_VIDEOS])); setSrc('embedded');
+      setSteps(toCards(mergeSteps([...EMBEDDED_DATA, ...EXTRA_VIDEOS]))); setSrc('embedded');
     } finally { setLoading(false); }
   }
 
@@ -254,6 +248,7 @@ export default function SalsaApp() {
     const f = [...new Set(steps.map(s=>s.level))];
     return ['All', ...LEVEL_ORDER.filter(l=>f.includes(l)), ...f.filter(l=>!LEVEL_ORDER.includes(l))];
   }, [steps]);
+  const stepCount = useMemo(() => steps.filter(s => s.videoNo <= 1).length, [steps]);
   const types = useMemo(() => ['All', ...new Set(steps.map(s=>s.type))], [steps]);
 
   const filtered = useMemo(() => steps.filter(s => {
@@ -307,7 +302,7 @@ export default function SalsaApp() {
             <p style={{fontSize:15,color:'#f97316',fontWeight:500,marginTop:2}}>by Avner Man</p>
           </div>
         </div>
-        <p style={{fontSize:17,color:'#d1d5db',fontWeight:300,position:'relative',zIndex:1}}>חפש, סנן והפעל סרטוני הדגמה ל-{steps.length} צעדי סלסה ורואדה</p>
+        <p style={{fontSize:17,color:'#d1d5db',fontWeight:300,position:'relative',zIndex:1}}>חפש, סנן והפעל סרטוני הדגמה ל-{stepCount} צעדי סלסה ורואדה</p>
         {src==='embedded' && (
           <div style={{marginTop:12,padding:'6px 16px',backgroundColor:'#1c1917',borderRadius:8,fontSize:13,color:'#a8a29e',display:'inline-flex',alignItems:'center',gap:6}}>
             📦 נתונים מקומיים | <button onClick={load} style={{background:'none',border:'none',color:'#f97316',cursor:'pointer',fontSize:13,textDecoration:'underline',fontFamily:"'Heebo',sans-serif"}}>נסה לרענן ↻</button>
@@ -348,7 +343,7 @@ export default function SalsaApp() {
           </div>
         </div>
         <div style={{textAlign:'center',fontSize:13,color:'#6b7280',marginTop:6,display:'flex',alignItems:'center',justifyContent:'center',gap:10}}>
-          <span>{filtered.length} צעדים מתוך {steps.length}</span>
+          <span>{filtered.length} סרטונים מתוך {steps.length}</span>
           {hasFilters && <button onClick={()=>{setSearch('');setLvl('All');setTyp('All');}} style={{background:'#374151',color:'#d1d5db',border:'none',padding:'3px 10px',borderRadius:8,cursor:'pointer',fontSize:12,fontFamily:"'Heebo',sans-serif"}}>נקה הכל ✕</button>}
         </div>
       </div>
@@ -368,7 +363,7 @@ export default function SalsaApp() {
                 <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
                   <div style={{width:10,height:10,borderRadius:'50%',backgroundColor:c.color,boxShadow:`0 0 12px ${c.color}66`,flexShrink:0}} />
                   <h2 style={{fontSize:22,fontWeight:700,color:c.color,whiteSpace:'nowrap'}}>{c.icon} {c.label||level}</h2>
-                  <span style={{fontSize:13,color:'#6b7280',whiteSpace:'nowrap'}}>{ls.length} צעדים</span>
+                  <span style={{fontSize:13,color:'#6b7280',whiteSpace:'nowrap'}}>{ls.length} סרטונים</span>
                   <div style={{flex:1,height:1,backgroundColor:'#1f2937',marginRight:16}} />
                 </div>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:14}}>
@@ -388,7 +383,7 @@ export default function SalsaApp() {
       <footer style={{textAlign:'center',padding:'28px 24px',borderTop:'1px solid #1f2937',color:'#9ca3af',fontSize:14}}>
         <img src="/icon.png" alt="" style={{width:40,height:40,borderRadius:10,marginBottom:8}} />
         <p style={{fontWeight:600}}>Salsa Steps Catalog © {new Date().getFullYear()} Avner Man</p>
-        <p style={{fontSize:13,color:'#6b7280',marginTop:4}}>נתונים מ-Google Sheets | {steps.length} צעדים | נבנה עם ❤️</p>
+        <p style={{fontSize:13,color:'#6b7280',marginTop:4}}>נתונים מ-Google Sheets | {stepCount} צעדים | נבנה עם ❤️</p>
         <a href="https://vercel.com/manavner-9849s-projects/salsa-steps-web/analytics" target="_blank" rel="noopener noreferrer"
           style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:14,padding:'7px 16px',borderRadius:20,border:'1px solid #374151',color:'#9ca3af',fontSize:12,textDecoration:'none',background:'#111827',transition:'all .2s'}}
           onMouseEnter={e=>{e.currentTarget.style.borderColor='#6b7280';e.currentTarget.style.color='#f3f4f6';}}
