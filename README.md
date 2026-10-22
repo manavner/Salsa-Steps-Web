@@ -47,3 +47,7 @@ Open [http://localhost:3000](http://localhost:3000)
 (level/type of new steps is a guess, to review). The 104 rows were added to the Google Sheet ("Rueda Moves", rows 169-272),
 so the sheet is the only live data source. `EMBEDDED_DATA` in `app/SalsaApp.js` is an offline fallback snapshot of the sheet.
 To add future videos, add rows to the sheet.
+
+### Levels (2026-10-22)
+The Level column follows the school curriculum ("סלסה.pdf"): Basic, Beginners, Intermediate, Advanced, Master,
+and Other for steps that are not in the curriculum. Each level gets its own filter button.
