@@ -76,7 +76,7 @@ function videoThumb(url) {
   const d = driveId(url); return d ? `https://lh3.googleusercontent.com/d/${d}=w480` : null;
 }
 function embedUrl(url) {
-  const yt = ytId(url); if (yt) return `https://www.youtube.com/embed/${yt}?autoplay=1&rel=0`;
+  const yt = ytId(url); if (yt) return `https://www.youtube.com/embed/${yt}?autoplay=1&rel=0&playsinline=1`;
   const d = driveId(url); return d ? `https://drive.google.com/file/d/${d}/preview` : null;
 }
 
@@ -121,7 +121,7 @@ function VideoModal({ step, onClose }) {
         </div>
         {src ? (
           <div style={{position:'relative',width:'100%',paddingTop:'56.25%',borderRadius:12,overflow:'hidden',background:'#000'}}>
-            <iframe key={src} src={src} title={step.stepName} style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',border:'none'}} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+            <iframe key={src} src={src} title={step.stepName} style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',border:'none'}} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen />
           </div>
         ) : link ? (
           <div style={{padding:40,textAlign:'center',background:'#1f2937',borderRadius:12}}>
@@ -131,7 +131,7 @@ function VideoModal({ step, onClose }) {
         ) : (
           <div style={{padding:40,textAlign:'center',background:'#1f2937',borderRadius:12}}><p style={{color:'#9ca3af'}}>אין סרטון זמין לצעד זה</p></div>
         )}
-        {link && src && <a href={link} target="_blank" rel="noopener noreferrer" style={{display:'block',textAlign:'center',marginTop:12,color:'#9ca3af',fontSize:13,textDecoration:'none'}}>{isDrive ? 'צפה ב-Google Drive ↗' : 'צפה ב-YouTube ↗'}</a>}
+        {link && src && <div style={{textAlign:'center',marginTop:14}}><a href={link} target="_blank" rel="noopener noreferrer" style={{display:'inline-block',padding:'9px 22px',borderRadius:10,fontSize:15,fontWeight:600,color:'#fff',textDecoration:'none',backgroundColor:isDrive?'#1a73e8':'#e11d48'}}>{isDrive ? 'פתח ב-Google Drive ↗' : 'פתח ב-YouTube ↗'}</a></div>}
       </div>
     </div>
   );
@@ -175,7 +175,7 @@ function StepCard({ step, onPlay, idx }) {
         {thumb ? (
           <>
             {!imgOk && <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:36,background:'linear-gradient(135deg,#1f2937,#111827)'}}>🎬</div>}
-            <img src={thumb} alt={step.stepName} referrerPolicy="no-referrer" style={{width:'100%',height:'100%',objectFit:'cover',transition:'opacity .3s',opacity:imgOk?1:0}} onLoad={()=>setImgOk(true)} />
+            <img src={thumb} alt={step.stepName} loading="lazy" decoding="async" referrerPolicy="no-referrer" style={{width:'100%',height:'100%',objectFit:'cover',transition:'opacity .3s',opacity:imgOk?1:0}} onLoad={()=>setImgOk(true)} />
             <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,.35)',transition:'opacity .25s',opacity:hov?1:0.5}}>
               <div style={{width:44,height:44,borderRadius:'50%',background:'rgba(225,29,72,.9)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,color:'#fff',paddingLeft:3,boxShadow:'0 4px 16px rgba(225,29,72,.4)'}}>▶</div>
             </div>
