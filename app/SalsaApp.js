@@ -211,13 +211,6 @@ export default function SalsaApp() {
   const [lvl, setLvl] = useState('All');
   const [typ, setTyp] = useState('All');
   const [vid, setVid] = useState(null);
-  // On phones, YouTube videos open in the YouTube app (smoother than the embedded player)
-  const playStep = step => {
-    const yt = ytId(step.link || '');
-    const isPhone = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
-    if (yt && isPhone) window.open(`https://www.youtube.com/watch?v=${yt}`, '_blank', 'noopener');
-    else setVid(step);
-  };
   const [showTop, setShowTop] = useState(false);
   const sRef = useRef(null);
 
@@ -375,14 +368,14 @@ export default function SalsaApp() {
                   <div style={{flex:1,height:1,backgroundColor:'#1f2937',marginRight:16}} />
                 </div>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:14}}>
-                  {ls.map((s,i) => <StepCard key={`${s.stepName}-${i}`} step={s} onPlay={playStep} idx={i} />)}
+                  {ls.map((s,i) => <StepCard key={`${s.stepName}-${i}`} step={s} onPlay={setVid} idx={i} />)}
                 </div>
               </section>
             );
           })
         ) : (
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:14}}>
-            {filtered.map((s,i) => <StepCard key={`${s.stepName}-${i}`} step={s} onPlay={playStep} idx={i} />)}
+            {filtered.map((s,i) => <StepCard key={`${s.stepName}-${i}`} step={s} onPlay={setVid} idx={i} />)}
           </div>
         )}
       </main>
