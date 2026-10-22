@@ -41,3 +41,9 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+### New videos batch (2026-10-22)
+100 new YouTube videos (BailaSalsaClips) were matched to steps: 59 added as extra videos to existing steps, 41 as new steps
+(level/type of new steps is a guess, to review). Rows ready to paste into the Google Sheet: `data/new-videos-for-sheet.csv`.
+The same rows were added to the embedded fallback data (now 178 steps after merging).
+**Status:** the live site reads the sheet, so the videos appear on the live site only after pasting these rows into the sheet.
