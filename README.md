@@ -44,7 +44,6 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ### New videos batch (2026-10-22)
 100 new YouTube videos (BailaSalsaClips) were matched to steps: 59 added as extra videos to existing steps, 41 as new steps
-(level/type of new steps is a guess, to review). Rows ready to paste into the Google Sheet: `data/new-videos-for-sheet.csv`.
-These rows live in `EXTRA_VIDEOS` in `app/SalsaApp.js` and are always merged with the sheet data, so they show on the live site
-without editing the sheet (178 steps after merging). Adding the same rows to the sheet later is harmless: duplicate links are ignored.
-To add future videos, prefer the sheet.
+(level/type of new steps is a guess, to review). The 104 rows were added to the Google Sheet ("Rueda Moves", rows 169-272),
+so the sheet is the only live data source. `EMBEDDED_DATA` in `app/SalsaApp.js` is an offline fallback snapshot of the sheet.
+To add future videos, add rows to the sheet.
