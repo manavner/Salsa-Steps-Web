@@ -18,8 +18,8 @@ Steps are loaded from Google Sheets (`CSV_URL` in `app/SalsaApp.js`). Fallback d
 Supports YouTube and Google Drive video links.
 
 ### Multiple videos per step (2026-10-22)
-A step can have more than one video. Search shows one card per step with a "🎬 N סרטונים" badge,
-and the video window has buttons to switch between "סרטון 1", "סרטון 2", etc. Add videos in the sheet in any of these ways:
+A step can have more than one video. Search shows a separate card for each video (side by side, same step name),
+with a "🎬 סרטון 1 מתוך 2" badge. Add videos in the sheet in any of these ways:
 - **Another row** with the same step name, level and type (name match ignores upper/lower case and extra spaces).
 - **Extra columns** after the link column (F, G, ...), one link per column.
 - **Several links in one cell**, separated by a new line, space, `|` or `;`.
