@@ -75,3 +75,25 @@ export function hebrewName(name) {
   cache.set(name, he);
   return he;
 }
+
+// Forgiving Hebrew search: each word is reduced to a rough "skeleton" so different spellings match.
+// Ignores vowel letters (ו י א ה ע), geresh, doubled letters and final forms,
+// and treats similar-sounding letters as the same (כ=ק, ש=ס, ת=ט, ו at the start of a word = ב).
+const SAME = { 'ך':'ק','כ':'ק','ש':'ס','ת':'ט','ם':'מ','ן':'נ','ף':'פ','ץ':'צ' };
+function wordKey(w) {
+  return w
+    .replace(/^ו/, 'ב')                              // "וסילאלה" = "בסילאלה"
+    .replace(/[\u05D0-\u05EA]/g, c => SAME[c] || c)
+    .replace(/(.)\1+/g, '$1')                        // doubled letters ("סומבררו" = "סומברו")
+    .replace(/[ויאהע]/g, '');                        // vowel letters
+}
+export function hebrewKey(text) {
+  return (text || '')
+    .replace(/[\u0591-\u05C7\u05F3\u05F4'"`’]/g, '') // niqqud, geresh (׳) and quote marks
+    .split(/[^\u05D0-\u05EA]+/)                      // words (Hebrew letters only)
+    .map(wordKey).filter(Boolean);
+}
+// Every word typed must be the start of some word in the name, e.g. "סומברו דו" finds "Sombrero Doble"
+export function hebrewMatch(nameKey, queryKey) {
+  return queryKey.length > 0 && queryKey.every(q => nameKey.some(w => w.startsWith(q)));
+}

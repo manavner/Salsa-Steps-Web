@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { hebrewName } from './hebrewNames';
+import { hebrewName, hebrewKey, hebrewMatch } from './hebrewNames';
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQwXCQ2XoXYp3LdTuisNkzp9MLavv30da1ZaOC53PJvrnr6qTNShAIOthkEJ6x9jjHPoiYUNu6XV0Vi/pub?output=csv';
 
@@ -255,10 +255,11 @@ export default function SalsaApp() {
   const stepCount = useMemo(() => steps.filter(s => s.videoNo <= 1).length, [steps]);
   const types = useMemo(() => ['All', ...new Set(steps.map(s=>s.type))], [steps]);
 
+  const heQ = useMemo(() => hebrewKey(search), [search]);
   const filtered = useMemo(() => steps.filter(s => {
-    const ms = !search || s.stepName.toLowerCase().includes(search.toLowerCase()) || (s.nameHe||'').includes(search.trim()) || s.type.toLowerCase().includes(search.toLowerCase());
+    const ms = !search || s.stepName.toLowerCase().includes(search.toLowerCase()) || hebrewMatch(s.heKey || (s.heKey = hebrewKey(s.nameHe)), heQ) || s.type.toLowerCase().includes(search.toLowerCase());
     return ms && (lvl==='All'||s.level===lvl) && (typ==='All'||s.type===typ);
-  }), [steps, search, lvl, typ]);
+  }), [steps, search, heQ, lvl, typ]);
 
   const grouped = useMemo(() => {
     const g = {}; filtered.forEach(s => { if(!g[s.level])g[s.level]=[]; g[s.level].push(s); });
