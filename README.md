@@ -26,6 +26,11 @@ with a "🎬 סרטון 1 מתוך 2" badge. Add videos in the sheet in any of t
 
 Note: rows that differ only in letter case (e.g. "Dedo Complicado" / "Dedo complicado") are now merged into one step.
 
+### Hebrew names (2026-11-05)
+Each step name is also shown in Hebrew letters (same name, transliterated: Sombrero → סומבררו), under the name on the card and in the video window. Search works in Hebrew too.
+- Words are transliterated from the list in `app/hebrewNames.js`; unknown words get an automatic guess. Fix a spelling by editing that list.
+- Optional override: add a column with the header `Hebrew` (or `עברית`) anywhere in the Google Sheet; a value there replaces the automatic Hebrew name for that row.
+
 ## Deploy to Vercel
 
 1. Push this repo to GitHub

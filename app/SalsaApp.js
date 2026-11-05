@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { hebrewName } from './hebrewNames';
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQwXCQ2XoXYp3LdTuisNkzp9MLavv30da1ZaOC53PJvrnr6qTNShAIOthkEJ6x9jjHPoiYUNu6XV0Vi/pub?output=csv';
 
@@ -32,10 +33,12 @@ function extractLinks(...cells) {
 function parseCSV(csv) {
   const rows = parseCSVRows(csv);
   if (rows.length <= 1) return [];
+  // Optional column (any position) whose header is "Hebrew" / "עברית": overrides the automatic Hebrew name
+  const heCol = rows[0].findIndex(h => /hebrew|עברית/i.test(h || ''));
   return rows.slice(1).map(c => {
     if (c.length < 4) return null;
     // Column E and any extra columns (F, G, ...) may hold video links
-    return { level:c[0]||'Unknown', stepName:c[1]||'', originalCount:c[2]||'', type:c[3]||'Unknown', links:extractLinks(...c.slice(4)) };
+    return { level:c[0]||'Unknown', stepName:c[1]||'', originalCount:c[2]||'', type:c[3]||'Unknown', links:extractLinks(...c.slice(4)), nameHe:heCol >= 0 ? (c[heCol]||'').trim() : '' };
   }).filter(s => s && s.stepName);
 }
 // Rows with the same name + level + type become one step with all their videos
@@ -45,7 +48,7 @@ function mergeSteps(rows) {
     const links = r.links || extractLinks(r.link);
     const key = `${r.stepName.trim().toLowerCase()}|${r.level}|${r.type}`;
     const ex = map.get(key);
-    if (!ex) { map.set(key, { ...r, links:[...new Set(links)] }); return; }
+    if (!ex) { map.set(key, { ...r, nameHe:r.nameHe || hebrewName(r.stepName.trim()), links:[...new Set(links)] }); return; }
     links.forEach(l => { if (!ex.links.includes(l)) ex.links.push(l); });
     if (!ex.originalCount && r.originalCount) ex.originalCount = r.originalCount;
   });
@@ -113,7 +116,7 @@ function VideoModal({ step, onClose }) {
     <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.88)',backdropFilter:'blur(8px)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:16}}>
       <div onClick={e=>e.stopPropagation()} style={{background:'#111827',borderRadius:20,width:'100%',maxWidth:780,padding:24,position:'relative',border:'1px solid #1f2937',direction:'rtl',maxHeight:'90vh',overflowY:'auto'}}>
         <button onClick={onClose} style={{position:'absolute',top:14,left:14,background:'#374151',border:'none',color:'#fff',width:34,height:34,borderRadius:'50%',cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center',zIndex:10}}>✕</button>
-        <h2 style={{fontSize:22,fontWeight:700,color:'#f3f4f6',marginBottom:10,paddingLeft:44}}>{step.stepName}{step.videoTotal > 1 && <span style={{fontSize:15,fontWeight:400,color:'#9ca3af'}}> · סרטון {step.videoNo} מתוך {step.videoTotal}</span>}</h2>
+        <h2 style={{fontSize:22,fontWeight:700,color:'#f3f4f6',marginBottom:10,paddingLeft:44}}>{step.stepName}{step.nameHe && <span dir="rtl" style={{fontSize:18,fontWeight:500,color:'#9ca3af'}}> · {step.nameHe}</span>}{step.videoTotal > 1 && <span style={{fontSize:15,fontWeight:400,color:'#9ca3af'}}> · סרטון {step.videoNo} מתוך {step.videoTotal}</span>}</h2>
         <div style={{display:'flex',gap:7,marginBottom:16,flexWrap:'wrap'}}>
           <span style={{padding:'4px 11px',borderRadius:10,fontSize:12,color:'#fff',fontWeight:600,backgroundColor:LC[step.level]?.color||'#6b7280'}}>{LC[step.level]?.icon} {LC[step.level]?.label||step.level}</span>
           <span style={{padding:'4px 11px',borderRadius:10,fontSize:12,color:'#fff',fontWeight:600,backgroundColor:TC[step.type]?.color||'#6b7280'}}>{TC[step.type]?.label||step.type}</span>
@@ -188,7 +191,7 @@ function StepCard({ step, onPlay, idx }) {
       {/* Body */}
       <div style={{padding:'12px 14px 14px'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-          <h3 style={{fontSize:16,fontWeight:600,color:'#f3f4f6',flex:1,lineHeight:1.3}}>{step.stepName}</h3>
+          <h3 style={{fontSize:16,fontWeight:600,color:'#f3f4f6',flex:1,lineHeight:1.3}}>{step.stepName}{step.nameHe && <span dir="rtl" style={{display:'block',fontSize:14,fontWeight:500,color:'#9ca3af',marginTop:2}}>{step.nameHe}</span>}</h3>
           <button onClick={speak} title="הקרא בספרדית" style={{background:'#1f2937',border:'1px solid #374151',borderRadius:'50%',width:34,height:34,cursor:'pointer',fontSize:15,display:'flex',alignItems:'center',justifyContent:'center',marginRight:8,flexShrink:0}}>🔊</button>
         </div>
         <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
@@ -253,7 +256,7 @@ export default function SalsaApp() {
   const types = useMemo(() => ['All', ...new Set(steps.map(s=>s.type))], [steps]);
 
   const filtered = useMemo(() => steps.filter(s => {
-    const ms = !search || s.stepName.toLowerCase().includes(search.toLowerCase()) || s.type.toLowerCase().includes(search.toLowerCase());
+    const ms = !search || s.stepName.toLowerCase().includes(search.toLowerCase()) || (s.nameHe||'').includes(search.trim()) || s.type.toLowerCase().includes(search.toLowerCase());
     return ms && (lvl==='All'||s.level===lvl) && (typ==='All'||s.type===typ);
   }), [steps, search, lvl, typ]);
 
